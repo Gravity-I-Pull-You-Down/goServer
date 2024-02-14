@@ -3,14 +3,14 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"go-boilerplate/src/config"
 	"log"
+	"root/src/config"
 
 	"github.com/go-gorp/gorp"
 	_ "github.com/lib/pq" //import postgres
 )
 
-//DB ...
+// DB ...
 type DB struct {
 	*sql.DB
 }

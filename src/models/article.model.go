@@ -2,8 +2,8 @@ package models
 
 import (
 	"errors"
-	"go-boilerplate/src/common"
-	"go-boilerplate/src/core/db"
+	"root/src/common"
+	"root/src/core/db"
 	"time"
 )
 
@@ -40,7 +40,7 @@ type FindArticleForm struct {
 	ID int64 `form:"id" json:"id" binding:"required"`
 }
 
-//ArticleModel ...
+// ArticleModel ...
 type ArticleModel struct{}
 
 func (mod *BaseModel) GetAllArticles() (articles []Article, err error) {

@@ -3,8 +3,8 @@ package models
 import (
 	"context"
 	"fmt"
-	"go-boilerplate/src/common"
-	"go-boilerplate/src/core/db"
+	"root/src/common"
+	"root/src/core/db"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"

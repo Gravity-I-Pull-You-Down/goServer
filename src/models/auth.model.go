@@ -1,23 +1,27 @@
 package models
 
 import (
+	"context"
 	"fmt"
-	"go-boilerplate/src/common"
-	"go-boilerplate/src/config"
-	"go-boilerplate/src/core/db"
-	"go-boilerplate/src/utils"
+	"log"
+	"root/src/common"
+	"root/src/config"
+	"root/src/core/db"
+	"root/src/utils"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func AuthModel() *BaseModel {
 	mod := &BaseModel{
 		ModelConstructor: &common.ModelConstructor{
-			Gorm: db.GetGorm(),
+			Collection: db.GetMongoDb().Collection("users"),
 		},
 	}
 
@@ -32,14 +36,14 @@ type LoginInput struct {
 func (mod *BaseModel) CurrentUser(ctx *gin.Context) (User, error) {
 	var user User
 
-	user_id, err := utils.ExtractTokenID(ctx)
+	_, err := utils.ExtractTokenID(ctx)
 	fmt.Println(user)
 
 	if err != nil {
 		return user, err
 	}
 
-	user = UsersModel().GetOneUser(user_id)
+	//user = UsersModel().GetOneUser(user_id)
 
 	if err != nil {
 		return user, err
@@ -66,25 +70,21 @@ func GenerateToken(user User) (string, error) {
 
 }
 
-func (mod *BaseModel) LoginCheck(username, password string) (string, error) {
-	var err error
-
-	user := User{}
-
-	err = mod.Gorm.Limit(1).Where("username=?", username).Find(&user).Error
-
-	if err != nil || user.ID == 0 {
+func (mod *BaseModel) LoginCheck(username, password string) (result string, err error) {
+	var user User
+	err = mod.Collection.FindOne(context.TODO(), bson.M{"userName": username}).Decode(&user)
+	if err != nil || user.ID == primitive.NilObjectID {
 		return "", err
 	}
-
+	log.Println("user => ", user.ID, password, user.Password)
 	err = VerifyPassword(password, user.Password)
 
 	if err != nil && err == bcrypt.ErrMismatchedHashAndPassword {
 		return "", err
 	}
-
+	log.Println("user => ", user.ID, password, user.Password)
 	token, err := GenerateToken(user)
-
+	log.Println("token => ", token)
 	if err != nil {
 		return "", err
 	}

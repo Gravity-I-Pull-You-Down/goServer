@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-	"go-boilerplate/src/config"
+	"root/src/config"
 	"strconv"
 	"strings"
 

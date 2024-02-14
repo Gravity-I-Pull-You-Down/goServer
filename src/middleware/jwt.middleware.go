@@ -3,8 +3,7 @@ package middleware
 import (
 	"fmt"
 	"net/http"
-
-	"go-boilerplate/src/utils"
+	"root/src/utils"
 
 	"github.com/gin-gonic/gin"
 )

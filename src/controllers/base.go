@@ -1,6 +1,6 @@
 package controllers
 
-import "go-boilerplate/src/common"
+import "root/src/common"
 
 type BaseController struct {
 	*common.ControllerConstructor

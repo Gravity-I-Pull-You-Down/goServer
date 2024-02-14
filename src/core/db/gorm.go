@@ -2,8 +2,8 @@ package db
 
 import (
 	"fmt"
-	"go-boilerplate/src/config"
 	"log"
+	"root/src/config"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

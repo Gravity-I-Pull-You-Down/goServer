@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"encoding/json"
-	"go-boilerplate/src/common"
-	"go-boilerplate/src/models"
-	"go-boilerplate/src/utils"
 	"net/http"
+	"root/src/common"
+	"root/src/models"
+	"root/src/utils"
 	"strconv"
 
 	"github.com/gin-gonic/gin"

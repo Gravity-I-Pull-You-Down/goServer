@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"go-boilerplate/docs"
-	"go-boilerplate/src/common"
 	"net/http"
+	"root/docs"
+	"root/src/common"
 
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"

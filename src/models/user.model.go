@@ -1,18 +1,23 @@
 package models
 
 import (
+	"context"
 	"fmt"
-	"go-boilerplate/src/common"
-	"go-boilerplate/src/core/db"
+	"root/src/common"
+	"root/src/core/db"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func UsersModel() *BaseModel {
 	mod := &BaseModel{
 		ModelConstructor: &common.ModelConstructor{
-			Gorm: db.GetGorm(),
+			Collection: db.GetMongoDb().Collection("users"),
 		},
 	}
 
@@ -26,12 +31,12 @@ func MigrateUsers() {
 // models definitions
 
 type User struct {
-	ID        uint   `gorm:"autoIncrement,primaryKey"`
-	Username  string `gorm:"not null,index,unique"`
+	ID        primitive.ObjectID `bson:"_id"`
+	Username  string             `db:"title" json:"title"`
 	Email     *string
-	FirstName string `gorm:"default:''"`
-	LastName  string `gorm:"default:''"`
-	Password  string `gorm:"not null"`
+	FirstName string `db:"firstName" json:"firstName"`
+	LastName  string `db:"lastName" json:"lastName"`
+	Password  string `db:"password" json:"password" validate:"required"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -49,7 +54,7 @@ type UsersResponse struct {
 	Count int    `json:"count"`
 }
 type UsersFindParam struct {
-	ID uint `uri:"id" binding:"required"`
+	ID primitive.ObjectID `bson:"_id"`
 }
 
 func VerifyPassword(password, hashedPassword string) error {
@@ -57,7 +62,7 @@ func VerifyPassword(password, hashedPassword string) error {
 }
 
 // models methods
-func (mod *BaseModel) GetOneUser(userId uint) User {
+func (mod *BaseModel) GetOneUser(userId primitive.ObjectID) User {
 	var user User
 
 	result := mod.Gorm.Limit(1).Where("id = ?", userId).Find(&user)
@@ -70,22 +75,31 @@ func (mod *BaseModel) GetOneUser(userId uint) User {
 	return user
 }
 
-func (mod *BaseModel) GetAllUsers(limit int, skip int, search string) ([]User, int) {
-	var users []User
-	var count int
+func (mod *BaseModel) GetAllUsers(limit int64, skip int64, search string) (user []User, err error) {
+	var results []User
+	opts := options.Find().SetLimit(limit).SetSkip(skip)
 
-	search = "%" + search + "%"
+	filter := bson.D{{}}
 
-	result := mod.Gorm.Limit(limit).Offset(skip).Where("email ilike ? OR username ilike ? OR first_name ilike ? OR last_name ilike ?", search, search, search, search).Find(&users)
-
-	mod.Gorm.Raw("SELECT COUNT(id) FROM users WHERE email ilike ? OR username ilike ? OR first_name ilike ? OR last_name ilike ?", search, search, search, search).Scan(&count)
-
-	if result.Error != nil {
-		fmt.Println(result.Error)
-		return nil, 0
+	cur, err := mod.Collection.Find(context.TODO(), filter, opts)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return
+		}
+		panic(err)
 	}
 
-	return users, count
+	if err = cur.All(context.TODO(), &results); err != nil {
+		panic(err)
+	}
+
+	count, err := mod.Collection.CountDocuments(context.TODO(), bson.D{})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(count)
+
+	return results, err
 }
 
 func (mod *BaseModel) UpdateUser(param UsersFindParam, body User) User {

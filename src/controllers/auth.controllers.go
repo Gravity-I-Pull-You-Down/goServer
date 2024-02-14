@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"go-boilerplate/src/common"
-	"go-boilerplate/src/middleware"
-	"go-boilerplate/src/models"
-	"go-boilerplate/src/utils"
 	"net/http"
+	"root/src/common"
+	"root/src/middleware"
+	"root/src/models"
+	"root/src/utils"
 
 	"github.com/gin-gonic/gin"
 )

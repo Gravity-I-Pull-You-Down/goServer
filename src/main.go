@@ -2,28 +2,34 @@ package main
 
 import (
 	"fmt"
-	"go-boilerplate/src/config"
-	"go-boilerplate/src/controllers"
-	"go-boilerplate/src/core/db"
-	"go-boilerplate/src/models"
+	"root/src/config"
+	"root/src/controllers"
+	"root/src/core/db"
 
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 )
 
+func authMiddleware(c *gin.Context) {
+	fmt.Println("Im a dummy!")
+	// Pass on to the next-in-chain
+	c.Next()
+}
 func main() {
 	r := gin.Default()
 
-	db.InitRedis(1)
+	//db.InitRedis(1)
 	db.InitMongoDB()
-	db.InitPostgresDB()
-	db.InitGorm()
+	//db.InitPostgresDB()
+	//db.InitGorm()
 
-	models.MigrateUsers()
+	//models.MigrateUsers()
 
 	// register controllers
-	controllers.UsersController(r)
 	controllers.AuthController(r)
+
+	r.Use(authMiddleware)
+	controllers.UsersController(r)
 	controllers.ArticlesController(r)
 	controllers.ProductsController(r)
 	controllers.SwaggersController(r)

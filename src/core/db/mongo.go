@@ -3,8 +3,8 @@ package db
 import (
 	"context"
 	"fmt"
-	"go-boilerplate/src/config"
 	"log"
+	"root/src/config"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

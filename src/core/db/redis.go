@@ -2,14 +2,14 @@ package db
 
 import (
 	"fmt"
-	"go-boilerplate/src/config"
+	"root/src/config"
 
 	_redis "github.com/go-redis/redis/v7"
 )
 
 var RedisClient *_redis.Client
 
-//InitRedis ...
+// InitRedis ...
 func InitRedis(selectDB ...int) {
 
 	var redisHost = config.LoadConfig("REDIS_HOST")
@@ -34,7 +34,7 @@ func InitRedis(selectDB ...int) {
 	fmt.Println("Connected to Redis!")
 }
 
-//GetRedis ...
+// GetRedis ...
 func GetRedis() *_redis.Client {
 	return RedisClient
 }

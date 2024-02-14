@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"fmt"
-	"go-boilerplate/src/common"
-	"go-boilerplate/src/models"
-	"go-boilerplate/src/utils"
 	"net/http"
+	"root/src/common"
+	"root/src/models"
+	"root/src/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -57,14 +57,14 @@ func getUsers(ctx *gin.Context, ctr *BaseController) {
 	skip := utils.GetQueryInt(ctx, "skip", 0)
 	search := utils.GetQueryString(ctx, "search", "")
 
-	users, count := models.UsersModel().GetAllUsers(limit, skip, search)
+	results, err := models.UsersModel().GetAllUsers(int64(limit), int64(skip), search)
 
-	response := models.UsersResponse{
-		Users: users,
-		Count: count,
+	if err != nil {
+		ctx.JSON(http.StatusNotAcceptable, gin.H{"message": err.Error()})
+		return
 	}
 
-	ctx.JSON(http.StatusOK, response)
+	ctx.JSON(http.StatusOK, results)
 }
 
 // @Summary      Get An User

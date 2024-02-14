@@ -1,8 +1,8 @@
 package models
 
 import (
-	"go-boilerplate/src/common"
-	"go-boilerplate/src/core/db"
+	"root/src/common"
+	"root/src/core/db"
 	"time"
 )
 

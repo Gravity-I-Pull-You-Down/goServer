@@ -1,6 +1,6 @@
 package models
 
-import "go-boilerplate/src/common"
+import "root/src/common"
 
 type BaseModel struct {
 	*common.ModelConstructor
